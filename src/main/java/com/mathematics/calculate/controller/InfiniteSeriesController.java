@@ -24,14 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mathematics.calculate.constant.ComputerConstant;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 /**
+ * 无穷级数有限项求和
+ * 
  * @author GeminiWaterAce
  *
  */
+@Api(tags = "无穷级数有限项求和")
 @RestController
 @RequestMapping(value = "infiniteSeries")
 public class InfiniteSeriesController {
@@ -39,7 +43,7 @@ public class InfiniteSeriesController {
 	// private static final Logger logger =
 	// LoggerFactory.getLogger(InfiniteSeriesController.class);
 
-	private static final BigInteger CPU_CORES_BIG_INTEGER_VAL = BigInteger.valueOf(ComputerConstant.CPU_CORES);
+	private static final BigInteger CPU_THREADS_BIG_INTEGER_VAL = BigInteger.valueOf(ComputerConstant.CPU_THREADS);
 
 	@ApiOperation(value = "调和级数求和")
 	@ApiImplicitParams({
@@ -50,10 +54,10 @@ public class InfiniteSeriesController {
 	public Map<String, String> sumHarmonicSeries(@RequestParam(value = "n") BigInteger n,
 			@RequestParam(value = "scale") int scale) {
 		LocalDateTime startLdt = LocalDateTime.now();
-		List<BigInteger> startElementsTemp = new ArrayList<>(ComputerConstant.CPU_CORES + 1);
-		for (int i = 0; i < ComputerConstant.CPU_CORES + 1; i++) {
+		List<BigInteger> startElementsTemp = new ArrayList<>(ComputerConstant.CPU_THREADS + 1);
+		for (int i = 0; i < ComputerConstant.CPU_THREADS + 1; i++) {
 			BigInteger item = BigInteger.valueOf(i);
-			BigInteger startElement = n.multiply(item).divide(CPU_CORES_BIG_INTEGER_VAL);
+			BigInteger startElement = n.multiply(item).divide(CPU_THREADS_BIG_INTEGER_VAL);
 			startElementsTemp.add(startElement);
 		}
 		Set<BigInteger> startElementSet = new LinkedHashSet<>(startElementsTemp);
@@ -110,37 +114,6 @@ public class InfiniteSeriesController {
 				continue;
 			}
 			numerator = numerator.add(numerators[i]);
-		}
-		BigDecimal sum = new BigDecimal(numerator).divide(new BigDecimal(denominator), scale, BigDecimal.ROUND_CEILING);
-		LocalDateTime endLdt = LocalDateTime.now();
-		Duration duration = Duration.between(startLdt, endLdt);
-		float millis = new Long(duration.toMillis()).floatValue();
-		Map<String, String> resultMap = new HashMap<>();
-		resultMap.put("n", Objects.toString(n));
-		resultMap.put("scale", Objects.toString(scale));
-		resultMap.put("sum", Objects.toString(sum));
-		resultMap.put("time-consuming", Objects.toString(millis / 1000).concat("s"));
-		return resultMap;
-	}
-
-	@ApiOperation(value = "单线程调和级数求和")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "n", value = "求和项数", dataType = "BigInteger", required = true, paramType = "query"),
-			@ApiImplicitParam(name = "scale", value = "小数位精度", dataType = "int", required = true, paramType = "query") })
-	@RequestMapping(value = "/sumHarmonicSeriesSingleThread", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, String> sumHarmonicSeriesSingleThread(@RequestParam(value = "n") BigInteger n,
-			@RequestParam(value = "scale") int scale) {
-		LocalDateTime startLdt = LocalDateTime.now();
-		BigInteger denominator = BigInteger.ONE;// 求出分母
-		for (BigInteger i = BigInteger.ZERO; i.compareTo(n) < 0; i = BigInteger.ONE.add(i)) {
-			BigInteger item = i.add(BigInteger.ONE);
-			denominator = denominator.multiply(item);
-		}
-		BigInteger numerator = BigInteger.ZERO;// 求出分子
-		for (BigInteger i = BigInteger.ZERO; i.compareTo(n) < 0; i = BigInteger.ONE.add(i)) {
-			BigInteger item = denominator.divide(i.add(BigInteger.ONE));
-			numerator = numerator.add(item);
 		}
 		BigDecimal sum = new BigDecimal(numerator).divide(new BigDecimal(denominator), scale, BigDecimal.ROUND_CEILING);
 		LocalDateTime endLdt = LocalDateTime.now();
