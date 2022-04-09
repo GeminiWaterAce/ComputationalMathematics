@@ -43,7 +43,7 @@ public class InfiniteSeriesController {
 	// private static final Logger logger =
 	// LoggerFactory.getLogger(InfiniteSeriesController.class);
 
-	private static final BigInteger CPU_THREADS_BIG_INTEGER_VAL = BigInteger.valueOf(ComputerConstant.CPU_THREADS);
+	private static final BigInteger CPU_CORES_BIG_INTEGER_VAL = BigInteger.valueOf(ComputerConstant.CPU_CORES);
 
 	@ApiOperation(value = "调和级数求和")
 	@ApiImplicitParams({
@@ -54,10 +54,10 @@ public class InfiniteSeriesController {
 	public Map<String, String> sumHarmonicSeries(@RequestParam(value = "n") BigInteger n,
 			@RequestParam(value = "scale") int scale) {
 		LocalDateTime startLdt = LocalDateTime.now();
-		List<BigInteger> startElementsTemp = new ArrayList<>(ComputerConstant.CPU_THREADS + 1);
-		for (int i = 0; i < ComputerConstant.CPU_THREADS + 1; i++) {
+		List<BigInteger> startElementsTemp = new ArrayList<>(ComputerConstant.CPU_CORES + 1);
+		for (int i = 0; i < ComputerConstant.CPU_CORES + 1; i++) {
 			BigInteger item = BigInteger.valueOf(i);
-			BigInteger startElement = n.multiply(item).divide(CPU_THREADS_BIG_INTEGER_VAL);
+			BigInteger startElement = n.multiply(item).divide(CPU_CORES_BIG_INTEGER_VAL);
 			startElementsTemp.add(startElement);
 		}
 		Set<BigInteger> startElementSet = new LinkedHashSet<>(startElementsTemp);
